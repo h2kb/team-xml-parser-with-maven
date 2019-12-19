@@ -1,0 +1,5 @@
+.idea/
+team-xml-parser-with-maven.iml
+
+# Project exclude paths
+/target/
