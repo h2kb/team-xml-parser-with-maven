@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Main {
+
     private static Document createDOM(File file) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -70,6 +71,24 @@ public class Main {
         }
     }
 
+    private static void generateResultXML(HashMap<String, Integer> resultOfGame, ArrayList<Player> players) {
+        StringBuilder builder = new StringBuilder();
+
+        for (HashMap.Entry<String, Integer> item : resultOfGame.entrySet()) {
+            builder.append("<").append(item.getValue()).append(">:<").append(item.getKey()).append(">\n<");
+
+            for (Player player : players) {
+                if (player.getTeam().equals(item.getKey())) {
+                    builder.append(player.getName()).append(" ").append(player.getSurname()).append(" ");
+                }
+            }
+
+            builder.append(">\n");
+        }
+
+        System.out.println(builder.toString());
+    }
+
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
         HashMap<String, Integer> resultsOfGame = new HashMap<>();
         ArrayList<Player> players = new ArrayList<>();
@@ -81,6 +100,7 @@ public class Main {
         Document dTeams = createDOM(teams);
 
         parseResults(dResults, resultsOfGame);
-        parseTeams(dTeams,players);
+        parseTeams(dTeams, players);
+        generateResultXML(resultsOfGame, players);
     }
 }

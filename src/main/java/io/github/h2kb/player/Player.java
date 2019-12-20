@@ -17,13 +17,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player{" +
-                "name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", age=" + age +
-                ", team='" + team + '\'' +
-                ", role='" + role + '\'' +
-                '}';
+        return surname + " " + name;
     }
 
     public String getName() {
