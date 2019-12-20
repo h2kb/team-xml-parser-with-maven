@@ -82,7 +82,6 @@ public class Main {
                     builder.append(player.getName()).append(" ").append(player.getSurname()).append(" ");
                 }
             }
-
             builder.append(">\n");
         }
 
