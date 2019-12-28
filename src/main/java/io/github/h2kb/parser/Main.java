@@ -1,5 +1,6 @@
 package io.github.h2kb.parser;
 
+import io.github.h2kb.databaseHandler.DatabaseHandler;
 import io.github.h2kb.player.Player;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -12,6 +13,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -88,7 +90,7 @@ public class Main {
         System.out.println(builder.toString());
     }
 
-    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
+    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException, SQLException {
         HashMap<String, Integer> resultsOfGame = new HashMap<>();
         ArrayList<Player> players = new ArrayList<>();
 
@@ -98,8 +100,16 @@ public class Main {
         Document dResults = createDOM(results);
         Document dTeams = createDOM(teams);
 
-        parseResults(dResults, resultsOfGame);
-        parseTeams(dTeams, players);
-        generateResultXML(resultsOfGame, players);
+//        parseResults(dResults, resultsOfGame);
+//        parseTeams(dTeams, players);
+//        generateResultXML(resultsOfGame, players);
+        Connection dbConnection = DatabaseHandler.getDbConnection();
+        String query = "SELECT * FROM books";
+        Statement statement = dbConnection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString(2) + " " + resultSet.getString(3));
+        }
     }
 }

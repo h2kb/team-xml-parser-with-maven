@@ -1,5 +1,3 @@
 .idea/
 team-xml-parser-with-maven.iml
-
-# Project exclude paths
-/target/
+/src/main/java/io/github/h2kb/databaseHandler/database.properties
