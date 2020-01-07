@@ -4,14 +4,12 @@ public class Player {
     private String name;
     private String surname;
     private int age;
-    private String team;
     private String role;
 
-    public Player(String name, String surname, int age, String team, String role) {
+    public Player(String name, String surname, int age, String role) {
         this.name = name;
         this.surname = surname;
         this.age = age;
-        this.team = team;
         this.role = role;
     }
 
@@ -30,10 +28,6 @@ public class Player {
 
     public int getAge() {
         return age;
-    }
-
-    public String getTeam() {
-        return team;
     }
 
     public String getRole() {

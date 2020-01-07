@@ -4,7 +4,6 @@ import io.github.h2kb.player.Player;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.Connection;
@@ -41,7 +40,7 @@ public class DatabaseHandler {
         return DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPassword);
     }
 
-    public void addPlayer(Player player) throws SQLException {
+    public void savePlayer(Player player, String teamName) throws SQLException {
         String insert = "INSERT INTO player(name, surname, age, role) VALUES(?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = getDbConnection().prepareStatement(insert);
@@ -51,6 +50,16 @@ public class DatabaseHandler {
         preparedStatement.setInt(4, getRoleId(player.getRole()));
 
         preparedStatement.executeUpdate();
+
+        int playerId = getPlayerId(player.getName(), player.getSurname());
+        int teamId = getTeamId(teamName);
+        addPlayer2Team(playerId, teamId);
+    }
+
+    public void addPlayer(Player player, String teamName) throws SQLException {
+        addRole(player.getRole());
+        addTeam(teamName);
+        savePlayer(player, teamName);
     }
 
     public int getPlayerId(String playerName, String playerSurname) throws SQLException {
@@ -70,12 +79,14 @@ public class DatabaseHandler {
     }
 
     public void addTeam(String teamName) throws SQLException {
-        String insert = "INSERT INTO team(name) VALUES(?)";
+        if (getTeamId(teamName) == -1) {
+            String insert = "INSERT INTO team(name) VALUES(?)";
 
-        PreparedStatement preparedStatement = getDbConnection().prepareStatement(insert);
-        preparedStatement.setString(1, teamName);
+            PreparedStatement preparedStatement = getDbConnection().prepareStatement(insert);
+            preparedStatement.setString(1, teamName);
 
-        preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
+        }
     }
 
     public int getTeamId(String teamName) throws SQLException {
@@ -94,12 +105,14 @@ public class DatabaseHandler {
     }
 
     public void addRole(String role) throws SQLException {
-        String insert = "INSERT INTO role(role) VALUES(?)";
+        if (getRoleId(role) == -1) {
+            String insert = "INSERT INTO role(role) VALUES(?)";
 
-        PreparedStatement preparedStatement = getDbConnection().prepareStatement(insert);
-        preparedStatement.setString(1, role);
+            PreparedStatement preparedStatement = getDbConnection().prepareStatement(insert);
+            preparedStatement.setString(1, role);
 
-        preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
+        }
     }
 
     public int getRoleId(String role) throws SQLException {

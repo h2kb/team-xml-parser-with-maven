@@ -25,14 +25,12 @@ public class ParserResults extends Parser{
         NodeList results = dResults.getElementsByTagName("result");
 
         for (int i = 0; i < results.getLength(); i++) {
-            Node result = results.item(i);
+            Element result = (Element) results.item(i);
 
             if (result.getNodeType() == Node.ELEMENT_NODE) {
-                Element element = (Element) result;
-
-                String teamName = element.getElementsByTagName("team").item(0).getTextContent();
+                String teamName = getElementData(result, "team");
                 int teamId = dbHandler.getTeamId(teamName);
-                int place = Integer.parseInt(element.getElementsByTagName("place").item(0).getTextContent());
+                int place = Integer.parseInt(getElementData(result, "place"));
 
                 dbHandler.addResult(teamId, place);
             }

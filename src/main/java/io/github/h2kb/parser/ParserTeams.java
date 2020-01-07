@@ -12,13 +12,36 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ParserTeams extends Parser{
+public class ParserTeams extends Parser {
 
     private DatabaseHandler dbHandler;
 
     public ParserTeams(File dbProperties) throws IOException {
         dbHandler = new DatabaseHandler(dbProperties);
+    }
+
+    private List<Player> transformNodeListToPlayersList(NodeList nodeList) {
+        List<Player> playersList = new ArrayList<Player>(nodeList.getLength());
+        for (int j = 0; j < nodeList.getLength(); j++) {
+            Element playerNode = (Element) nodeList.item(j);
+            if (playerNode.getNodeType() == Node.ELEMENT_NODE) {
+                playersList.add(createPlayerFromElementNode(playerNode));
+            }
+        }
+
+        return playersList;
+    }
+
+    private Player createPlayerFromElementNode(Element playerNode) {
+        String name = getElementData(playerNode, "name");
+        String surname = getElementData(playerNode, "surname");
+        int age = Integer.parseInt(getElementData(playerNode, "age"));
+        String role = getElementData(playerNode, "role");
+
+        return new Player(name, surname, age, role);
     }
 
     public void parseTeams(File file) throws SQLException, IOException, SAXException, ParserConfigurationException {
@@ -30,37 +53,12 @@ public class ParserTeams extends Parser{
 
             if (team.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) team;
+                String teamName = getElementData(element, "name");
+                NodeList nodeList = element.getElementsByTagName("player");
+                List<Player> players = transformNodeListToPlayersList(nodeList);
 
-                String teamName = element.getElementsByTagName("name").item(0).getTextContent();
-                NodeList playersList = element.getElementsByTagName("player");
-
-                for (int j = 0; j < playersList.getLength(); j++) {
-                    Node playerNode = playersList.item(j);
-
-                    if (playerNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element playerDetail = (Element) playerNode;
-
-                        String name = playerDetail.getElementsByTagName("name").item(0).getTextContent();
-                        String surname = playerDetail.getElementsByTagName("surname").item(0).getTextContent();
-                        int age = Integer.parseInt(playerDetail.getElementsByTagName("age").item(0).getTextContent());
-                        String role = playerDetail.getElementsByTagName("role").item(0).getTextContent();
-
-                        if (dbHandler.getRoleId(role) == -1) {
-                            dbHandler.addRole(role);
-                        }
-
-                        if (dbHandler.getTeamId(teamName) == -1) {
-                            dbHandler.addTeam(teamName);
-                        }
-
-                        Player player = new Player(name, surname, age, teamName, role);
-                        dbHandler.addPlayer(player);
-
-                        int playerId = dbHandler.getPlayerId(player.getName(), player.getSurname());
-                        int teamId = dbHandler.getTeamId(teamName);
-
-                        dbHandler.addPlayer2Team(playerId, teamId);
-                    }
+                for (Player player : players) {
+                    dbHandler.addPlayer(player, teamName);
                 }
             }
         }

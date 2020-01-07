@@ -1,4 +1,3 @@
 .idea/
-team-xml-parser-with-maven.iml
-/src/main/java/io/github/h2kb/databaseHandler/database.properties
-/src/main/java/io/github/h2kb/databaseHandler/DatabaseProperties.java
+*.iml
+db.properties
